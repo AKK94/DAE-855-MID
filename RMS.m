@@ -11,7 +11,7 @@
 % root mean squared error to be used as a optimization function in the ABC
 
 %% Definition of function
-function Nector = RMS(U1, U2, T1, T2)
-    Nector = (sum((T1 - U1).^2))^0.5 + (sum((T2 - U2).^2))^0.5;
+function Nector = RMS(U1, U2, R1, R2)
+    Nector = (sum((R1 - U1).^2))^0.5 + (sum((R2 - U2).^2))^0.5;
 end
     

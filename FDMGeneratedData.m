@@ -17,7 +17,7 @@ x1 = 0:0.001:0.030;                 % Nodes for upper specimen
 dx1 = x1(2);                        % Differential element
 x2 = 0:0.001:0.030;                 % Nodes for lower specimen
 dx2 = x2(2);                        % Differential element
-t = 0:0.001:100;                    % Time nodes
+t = 0:0.001:10;                    % Time nodes
 dt = t(2);                          % Differential time
 TCC = 2120;                         % Highest limit for CFD to solve is 215000
 
