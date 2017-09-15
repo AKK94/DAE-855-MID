@@ -14,30 +14,29 @@
 % MCN -> Maximum cycle number
 % X(i) -> Matrix to location of necter sources (Value of TCC-Range: 1000 to 8000)
 
-SN = 10;
-EBees = SN;
-Scout = 1;
-D = 1;
-lim = 5;
-MCN = 10;
-X = 1000 + rand( 1, SN)*7000;
-NewX = X;
+function SolTCC = ArtificialBeeColony(T1, T2, CheckTime)
 
-%% Problem Definition
-% Test for one time frame and then utilize the loops to run complete
-% simualtion
-SolNo = 2;
-for CheckTime = 0.001:0.001:10
+    SN = 10;
+    EBees = SN;
+    Scout = 1;
+    D = 1;
+    lim = 5;
+    MCN = 20;
+    X = 1000 + rand( 1, SN)*7000;
+    NewX = X;
+
+    %% Problem Definition
+    % Find fitness parameters for each source by scout
+    for i = 1:SN
+        [U1, U2] = FDMSol( X(i), CheckTime);
+        F(i) = RMS( U1, U2, T1, T2);
+        fit(i) = 1/(1 + F(i));
+    end
+    Prob = fit/sum(fit);                    % Probablity for each food source
+    SortProb = sort(Prob);
+
+    %% Formulation of Algorithm
     for cycle = 1:MCN
-        % Find fitness parameters for each source by scout
-        for i = 1:SN
-            [U1, U2] = FDMSol( X(i), CheckTime);
-            F(i) = (sum((T1( :, SolNo) - U1).^2))^0.5 + (sum((T2( :, SolNo) - U2).^2))^0.5; %RMS( U1, U2, T1( :, SolNo), T2( :, SolNo)); %find(t==CheckTime)
-            fit(i) = 1/(1 + F(i));
-        end
-        Prob = fit/sum(fit);                    % Probablity for each food source
-        SortProb = sort(Prob);
-
         % Selection of food source by group of bees on the basis of probablity
         GBees = round(Prob*SN);                 % Group of Employed Bees
         while sum(GBees) ~= SN
@@ -72,11 +71,15 @@ for CheckTime = 0.001:0.001:10
         % replaces the old if nector quality is better
         for i = 1:SN
             [U1, U2] = FDMSol( NewX(i), CheckTime);
-            NewF(i) = (sum((T1( :, SolNo) - U1).^2))^0.5 + (sum((T2( :, SolNo) - U2).^2))^0.5; %RMS( U1, U2, T1( :, t==CheckTime), T2( :, t==CheckTime));
+            NewF(i) = RMS( U1, U2, T1, T2);
             if NewF(i) < F(i)
                 X(i) = NewX(i);
+                F(i) = NewF(i);
             end
+            fit(i) = 1/(1 + F(i));
         end
+        Prob = fit/sum(fit);                    % Probablity for each food source
+        SortProb = sort(Prob);                  % Sort Probablity of food sources
 
         % Replacement of worst food source with a new source which scout bee has
         % found out
@@ -84,25 +87,7 @@ for CheckTime = 0.001:0.001:10
             X( NewF == max(NewF)) = min(X) + rand()*( max(X) - min(X));
         end
     end
-    
+
     % Collect Solutions
-    SolTCC(SolNo) = sum(X)/SN;
-    SolNo = SolNo + 1;
+    SolTCC = sum(X)/SN;
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
